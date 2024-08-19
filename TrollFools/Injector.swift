@@ -21,9 +21,9 @@ final class Injector {
     }
 
     static func isBundleInjected(_ target: URL) -> Bool {
-        let frameworksURL = target.appendingPathComponent("Frameworks")
-        let substrateFwkURL = frameworksURL.appendingPathComponent("CydiaSubstrate.framework")
-        return FileManager.default.fileExists(atPath: substrateFwkURL.path)
+        // TODO
+        // return FileManager.default.fileExists(atPath: substrateFwkURL.path)
+        return false
     }
 
     static func injectedPlugInURLs(_ target: URL) -> [URL] {
@@ -165,12 +165,6 @@ final class Injector {
             }
         }
     }
-
-    private lazy var substrateZipURL: URL = Bundle.main.url(forResource: "CydiaSubstrate.framework", withExtension: "zip")!
-    private lazy var substrateFwkURL: URL = tempURL.appendingPathComponent("CydiaSubstrate.framework")
-    private lazy var substrateMainMachOURL: URL = substrateFwkURL.appendingPathComponent("CydiaSubstrate")
-    private lazy var targetSubstrateFwkURL: URL = frameworksURL.appendingPathComponent("CydiaSubstrate.framework")
-    private lazy var targetSubstrateMainMachOURL: URL = targetSubstrateFwkURL.appendingPathComponent("CydiaSubstrate")
 
     private func isMachOURL(_ url: URL) -> Bool {
         guard let fileHandle = try? FileHandle(forReadingFrom: url) else {
@@ -723,7 +717,7 @@ final class Injector {
                 continue
             }
 
-            try _applyChange(mainURL, from: dylib, to: "@executable_path/Frameworks/CydiaSubstrate.framework/CydiaSubstrate")
+            try _applyChange(mainURL, from: dylib, to: "@executable_path/Frameworks/")
         }
     }
 
@@ -829,9 +823,10 @@ final class Injector {
     }
 
     private func _injectDylibsAndFrameworks(_ injectURLs: [URL], shouldBackup: Bool) throws {
-        try FileManager.default.unzipItem(at: substrateZipURL, to: tempURL)
-        try ctBypass(substrateMainMachOURL)
-        try changeOwnerToInstalld(substrateMainMachOURL, isDirectory: false)
+        // TODO: 
+        // try FileManager.default.unzipItem(at: substrateZipURL, to: tempURL)
+        // try ctBypass(substrateMainMachOURL)
+        // try changeOwnerToInstalld(substrateMainMachOURL, isDirectory: false)
 
         let filteredURLs = injectURLs.filter {
             !Self.ignoredDylibAndFrameworkNames.contains($0.lastPathComponent)
@@ -851,9 +846,9 @@ final class Injector {
         }
 
         do {
-            try markInjectDirectories([substrateFwkURL], withRootPermission: false)
-            try copyTargetInjectURLs([substrateFwkURL])
-            try changeOwnerToInstalld(targetSubstrateFwkURL, isDirectory: true)
+            // try markInjectDirectories([substrateFwkURL], withRootPermission: false)
+            // try copyTargetInjectURLs([substrateFwkURL])
+            // try changeOwnerToInstalld(targetSubstrateFwkURL, isDirectory: true)
 
             try markInjectDirectories(newInjectURLs, withRootPermission: true)
             let copiedURLs: [URL] = try copyTargetInjectURLs(newInjectURLs)
@@ -913,7 +908,8 @@ final class Injector {
         }
 
         if !hasInjectedPlugIn {
-            try? removeURL(targetSubstrateFwkURL, isDirectory: true)
+            // TODO
+            // try? removeURL(targetSubstrateFwkURL, isDirectory: true)
             try? restoreIfExists(targetURL)
         }
     }
